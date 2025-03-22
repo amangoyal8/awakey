@@ -9,16 +9,16 @@ interface AdminNavigationProps {
   onClose?: () => void;
 }
 
-export function AdminNavigation({ variant, onClose = () => {} }: AdminNavigationProps) {
+export function AdminNavigation({ variant, onClose = () => { } }: AdminNavigationProps) {
   const isMobile = variant === 'mobile';
   const { isPageVisible, refreshRules } = usePageAccess();
-  
+
   // Refresh rules when component mounts
   useEffect(() => {
     refreshRules();
   }, [refreshRules]);
-  
-  const linkClass = isMobile 
+
+  const linkClass = isMobile
     ? "block py-2 text-sm font-medium transition-colors hover:text-primary"
     : "text-sm font-medium transition-colors hover:text-primary";
 
@@ -65,9 +65,9 @@ export function AdminNavigation({ variant, onClose = () => {} }: AdminNavigation
   return (
     <div className={isMobile ? "space-y-4" : "flex items-center gap-6"}>
       {navItems.map((item) => (
-        <Link 
+        <Link
           key={item.path}
-          to={item.path} 
+          to={item.path}
           className={linkClass}
           onClick={handleClick}
         >

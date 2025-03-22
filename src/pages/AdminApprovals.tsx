@@ -4,12 +4,12 @@ import { supabase } from "@/integrations/supabase/client";
 import { Header } from "@/components/ui/Header";
 import { SideNav } from "@/components/ui/dashboard/SideNav";
 import { Button } from "@/components/ui/button";
-import { 
-  Card, 
-  CardContent, 
-  CardDescription, 
-  CardHeader, 
-  CardTitle 
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle
 } from "@/components/ui/card";
 import {
   Table,
@@ -50,7 +50,7 @@ const AdminApprovals = () => {
   const fetchApprovalRequests = async () => {
     try {
       setIsLoading(true);
-      
+
       // Get manager approvals with user details
       const { data, error } = await supabase
         .from('manager_approvals')
@@ -84,15 +84,15 @@ const AdminApprovals = () => {
     try {
       // Get current user ID
       const { data: { user } } = await supabase.auth.getUser();
-      
+
       if (!user) {
         throw new Error("User not authenticated");
       }
-      
+
       // Update the approval request
       const { error: updateError } = await supabase
         .from('manager_approvals')
-        .update({ 
+        .update({
           status: 'approved',
           approved_by: user.id
         })
@@ -101,29 +101,29 @@ const AdminApprovals = () => {
       if (updateError) {
         throw updateError;
       }
-      
+
       // Also update the user's role in profiles table
       const { error: userUpdateError } = await supabase
         .from('profiles')
         .update({ role: 'manager' })
         .eq('id', userId);
-        
+
       if (userUpdateError) {
         throw userUpdateError;
       }
-      
+
       // Update local state
-      setApprovalRequests(approvalRequests.map(request => 
-        request.id === requestId 
-          ? { 
-              ...request, 
-              status: 'approved', 
-              approved_by: user.id,
-              user: { ...request.user, role: 'manager' } 
-            } 
+      setApprovalRequests(approvalRequests.map(request =>
+        request.id === requestId
+          ? {
+            ...request,
+            status: 'approved',
+            approved_by: user.id,
+            user: { ...request.user, role: 'manager' }
+          }
           : request
       ));
-      
+
       toast.success('Request approved successfully');
     } catch (error: any) {
       console.error('Error approving request:', error);
@@ -135,15 +135,15 @@ const AdminApprovals = () => {
     try {
       // Get current user ID
       const { data: { user } } = await supabase.auth.getUser();
-      
+
       if (!user) {
         throw new Error("User not authenticated");
       }
-      
+
       // Update the approval request
       const { error: updateError } = await supabase
         .from('manager_approvals')
-        .update({ 
+        .update({
           status: 'rejected',
           approved_by: user.id
         })
@@ -152,14 +152,14 @@ const AdminApprovals = () => {
       if (updateError) {
         throw updateError;
       }
-      
+
       // Update local state
-      setApprovalRequests(approvalRequests.map(request => 
-        request.id === requestId 
-          ? { ...request, status: 'rejected', approved_by: user.id } 
+      setApprovalRequests(approvalRequests.map(request =>
+        request.id === requestId
+          ? { ...request, status: 'rejected', approved_by: user.id }
           : request
       ));
-      
+
       toast.success('Request rejected successfully');
     } catch (error: any) {
       console.error('Error rejecting request:', error);
@@ -200,7 +200,7 @@ const AdminApprovals = () => {
                     Approve or reject user role change requests
                   </CardDescription>
                 </div>
-                <Button 
+                <Button
                   onClick={fetchApprovalRequests}
                   variant="outline"
                   disabled={isLoading}
@@ -254,14 +254,14 @@ const AdminApprovals = () => {
                             <TableCell className="text-right">
                               {request.status === 'pending' && (
                                 <div className="flex justify-end gap-2">
-                                  <Button 
-                                    size="sm" 
+                                  <Button
+                                    size="sm"
                                     onClick={() => handleApprove(request.id, request.manager_id)}
                                   >
                                     Approve
                                   </Button>
-                                  <Button 
-                                    size="sm" 
+                                  <Button
+                                    size="sm"
                                     variant="outline"
                                     onClick={() => handleReject(request.id)}
                                   >

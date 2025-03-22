@@ -18,7 +18,7 @@ export default function TrainingVideo() {
   const queryParams = new URLSearchParams(location.search);
   const shouldShowQuiz = queryParams.get('quiz') === 'true';
   const navigate = useNavigate();
-  
+
   const {
     role,
     isLoading,
@@ -45,9 +45,9 @@ export default function TrainingVideo() {
           <div className="max-w-5xl mx-auto space-y-6">
             <div className="flex items-center justify-between">
               <div className="flex items-center">
-                <Button 
-                  variant="ghost" 
-                  size="sm" 
+                <Button
+                  variant="ghost"
+                  size="sm"
                   className="mr-2"
                   onClick={() => navigate('/training')}
                 >
@@ -61,7 +61,7 @@ export default function TrainingVideo() {
                 <Badge variant="outline">{videoData.category}</Badge>
               )}
             </div>
-            
+
             {isLoading ? (
               <div className="animate-pulse">
                 <div className="h-[450px] bg-muted rounded-lg"></div>
@@ -69,38 +69,39 @@ export default function TrainingVideo() {
                 <div className="h-4 bg-muted rounded w-1/2 mt-2"></div>
               </div>
             ) : showQuiz ? (
-              <Quiz 
-                questions={quizData} 
-                onComplete={handleQuizComplete} 
+              <Quiz
+                questions={quizData}
+                onComplete={handleQuizComplete}
                 passingScore={60}
               />
             ) : (
               <>
-                <VideoPlayer 
-                  videoUrl={videoData?.video_url} 
+                <VideoPlayer
+                  videoUrl={videoData?.video_url}
                   onTimeUpdate={(currentTime, duration) => handleTimeUpdate(currentTime, duration)}
                   onVideoEnded={handleVideoEnded}
                   lastPosition={userProgress?.last_position}
                   onPlay={() => console.log("Video playing")}
                   onPause={() => console.log("Video paused")}
                 />
-                
-                <VideoProgress 
+
+                <VideoProgress
                   watchedPercentage={watchedPercentage}
                   progressUpdateCount={progressUpdateCount}
                   quizUnlocked={quizUnlocked}
                   hasQuiz={quizData.length > 0}
                 />
-                
-                <VideoControls 
+
+                <VideoControls
                   onTakeQuiz={handleTakeQuiz}
                   onQuitTraining={handleQuitTraining}
                   quizUnlocked={quizUnlocked}
                   hasQuiz={quizData.length > 0}
+                  quizPassed={userProgress?.quiz_passed}
                   quizCompleted={userProgress?.quiz_completed}
                 />
-                
-                <VideoDescription 
+
+                <VideoDescription
                   title={videoData?.title || ''}
                   description={videoData?.description || ''}
                   userCompleted={userProgress?.completed}

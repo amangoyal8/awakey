@@ -8,6 +8,8 @@ interface VideoControlsProps {
   quizUnlocked: boolean;
   hasQuiz: boolean;
   quizCompleted: boolean;
+  quizPassed?: boolean;
+  score?: number;
 }
 
 export function VideoControls({
@@ -15,15 +17,27 @@ export function VideoControls({
   onQuitTraining,
   quizUnlocked,
   hasQuiz,
-  quizCompleted
+  quizCompleted,
+  quizPassed,
+  score
 }: VideoControlsProps) {
   return (
     <div className="flex space-x-2 mt-4 justify-center">
       {hasQuiz && (
         quizCompleted ? (
-          <Button variant="outline" className="gap-2 bg-green-50 text-green-600 border-green-200" disabled>
-            <Check className="h-4 w-4" /> Quiz Completed
-          </Button>
+          quizPassed ? (
+            <Button
+              variant="outline"
+              className="gap-2 bg-green-50 text-green-600 border-green-200"
+              disabled
+            >
+              <Check className="h-4 w-4" /> Passed: {score != null ? `${score}%` : "✓"}
+            </Button>
+          ) : (
+            <Button onClick={onTakeQuiz} className="gap-2 bg-red-50 text-red-600 border-red-200">
+              <GraduationCap className="h-4 w-4" /> Retake Quiz
+            </Button>
+          )
         ) : quizUnlocked ? (
           <Button onClick={onTakeQuiz} className="gap-2">
             <GraduationCap className="h-4 w-4" /> Start Quiz

@@ -4,12 +4,12 @@ import { supabase } from "@/integrations/supabase/client";
 import { Header } from "@/components/ui/Header";
 import { SideNav } from "@/components/ui/dashboard/SideNav";
 import { Button } from "@/components/ui/button";
-import { 
-  Card, 
-  CardContent, 
-  CardDescription, 
-  CardHeader, 
-  CardTitle 
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle
 } from "@/components/ui/card";
 import {
   Table,
@@ -84,7 +84,7 @@ const AdminUsers = () => {
     try {
       setIsLoading(true);
       console.log("Fetching users...");
-      
+
       // Using a more reliable query to get all users
       const { data, error } = await supabase
         .from('profiles')
@@ -116,10 +116,10 @@ const AdminUsers = () => {
       }
 
       // Update local state
-      setUsers(users.map(user => 
+      setUsers(users.map(user =>
         user.id === userId ? { ...user, role: newRole } : user
       ));
-      
+
       toast.success('User role updated successfully');
     } catch (error) {
       console.error('Error updating user role:', error);
@@ -164,7 +164,7 @@ const AdminUsers = () => {
 
       toast.success('User created successfully');
       setIsCreateDialogOpen(false);
-      
+
       // Reset the form
       setNewUser({
         email: "",
@@ -174,7 +174,7 @@ const AdminUsers = () => {
         company: "",
         position: ""
       });
-      
+
       // Refresh the user list
       fetchUsers();
     } catch (error: any) {
@@ -185,7 +185,7 @@ const AdminUsers = () => {
 
   const updateUser = async () => {
     if (!selectedUser) return;
-    
+
     try {
       const { error } = await supabase
         .from('profiles')
@@ -202,10 +202,10 @@ const AdminUsers = () => {
       }
 
       // Update local state
-      setUsers(users.map(user => 
+      setUsers(users.map(user =>
         user.id === selectedUser.id ? { ...selectedUser } : user
       ));
-      
+
       toast.success('User updated successfully');
       setIsEditDialogOpen(false);
     } catch (error: any) {
@@ -216,7 +216,7 @@ const AdminUsers = () => {
 
   const deleteUser = async () => {
     if (!selectedUser) return;
-    
+
     try {
       // Delete from auth (this will cascade to profiles due to the foreign key constraint)
       const { error } = await supabase.auth.admin.deleteUser(selectedUser.id);
@@ -227,7 +227,7 @@ const AdminUsers = () => {
 
       // Update local state
       setUsers(users.filter(user => user.id !== selectedUser.id));
-      
+
       toast.success('User deleted successfully');
       setIsDeleteDialogOpen(false);
     } catch (error: any) {
@@ -241,7 +241,7 @@ const AdminUsers = () => {
       // This would typically call a server function to send an email
       // For now, we'll just show a success toast
       toast.success(`Login details would be emailed to ${user.email}`);
-      
+
       // In a real implementation, you'd call a server function here:
       // const { error } = await supabase.functions.invoke('send-login-email', {
       //   body: { userId: user.id }
@@ -314,7 +314,7 @@ const AdminUsers = () => {
                           <Input
                             id="full_name"
                             value={newUser.full_name}
-                            onChange={(e) => setNewUser({...newUser, full_name: e.target.value})}
+                            onChange={(e) => setNewUser({ ...newUser, full_name: e.target.value })}
                             className="col-span-3"
                           />
                         </div>
@@ -326,7 +326,7 @@ const AdminUsers = () => {
                             id="email"
                             type="email"
                             value={newUser.email}
-                            onChange={(e) => setNewUser({...newUser, email: e.target.value})}
+                            onChange={(e) => setNewUser({ ...newUser, email: e.target.value })}
                             className="col-span-3"
                           />
                         </div>
@@ -338,7 +338,7 @@ const AdminUsers = () => {
                             id="password"
                             type="password"
                             value={newUser.password}
-                            onChange={(e) => setNewUser({...newUser, password: e.target.value})}
+                            onChange={(e) => setNewUser({ ...newUser, password: e.target.value })}
                             className="col-span-3"
                           />
                         </div>
@@ -346,9 +346,9 @@ const AdminUsers = () => {
                           <Label htmlFor="role" className="text-right">
                             Role
                           </Label>
-                          <Select 
-                            value={newUser.role} 
-                            onValueChange={(value) => setNewUser({...newUser, role: value as UserRole})}
+                          <Select
+                            value={newUser.role}
+                            onValueChange={(value) => setNewUser({ ...newUser, role: value as UserRole })}
                           >
                             <SelectTrigger className="col-span-3">
                               <SelectValue placeholder="Select role" />
@@ -368,7 +368,7 @@ const AdminUsers = () => {
                           <Input
                             id="company"
                             value={newUser.company || ''}
-                            onChange={(e) => setNewUser({...newUser, company: e.target.value})}
+                            onChange={(e) => setNewUser({ ...newUser, company: e.target.value })}
                             className="col-span-3"
                           />
                         </div>
@@ -379,7 +379,7 @@ const AdminUsers = () => {
                           <Input
                             id="position"
                             value={newUser.position || ''}
-                            onChange={(e) => setNewUser({...newUser, position: e.target.value})}
+                            onChange={(e) => setNewUser({ ...newUser, position: e.target.value })}
                             className="col-span-3"
                           />
                         </div>
@@ -390,8 +390,8 @@ const AdminUsers = () => {
                       </DialogFooter>
                     </DialogContent>
                   </Dialog>
-                  
-                  <Button 
+
+                  <Button
                     onClick={fetchUsers}
                     variant="outline"
                     disabled={isLoading}
@@ -445,7 +445,7 @@ const AdminUsers = () => {
                               <div className="flex items-center justify-end gap-2">
                                 <Select
                                   value={user.role}
-                                  onValueChange={(value) => 
+                                  onValueChange={(value) =>
                                     updateUserRole(user.id, value as UserRole)
                                   }
                                 >
@@ -459,26 +459,26 @@ const AdminUsers = () => {
                                     <SelectItem value="admin">Admin</SelectItem>
                                   </SelectContent>
                                 </Select>
-                                
-                                <Button 
-                                  variant="ghost" 
+
+                                <Button
+                                  variant="ghost"
                                   size="icon"
                                   onClick={() => handleEditUser(user)}
                                 >
                                   <PenSquare className="h-4 w-4" />
                                 </Button>
-                                
-                                <Button 
-                                  variant="ghost" 
+
+                                <Button
+                                  variant="ghost"
                                   size="icon"
                                   onClick={() => sendLoginDetails(user)}
                                   title="Send login details"
                                 >
                                   <Mail className="h-4 w-4 text-blue-500" />
                                 </Button>
-                                
-                                <Button 
-                                  variant="ghost" 
+
+                                <Button
+                                  variant="ghost"
                                   size="icon"
                                   onClick={() => handleDeleteUser(user)}
                                 >
@@ -495,7 +495,7 @@ const AdminUsers = () => {
               )}
             </CardContent>
           </Card>
-          
+
           {/* Edit User Dialog */}
           <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
             <DialogContent>
@@ -514,7 +514,7 @@ const AdminUsers = () => {
                     <Input
                       id="edit_full_name"
                       value={selectedUser.full_name || ''}
-                      onChange={(e) => setSelectedUser({...selectedUser, full_name: e.target.value})}
+                      onChange={(e) => setSelectedUser({ ...selectedUser, full_name: e.target.value })}
                       className="col-span-3"
                     />
                   </div>
@@ -536,9 +536,9 @@ const AdminUsers = () => {
                     <Label htmlFor="edit_role" className="text-right">
                       Role
                     </Label>
-                    <Select 
-                      value={selectedUser.role} 
-                      onValueChange={(value) => setSelectedUser({...selectedUser, role: value as UserRole})}
+                    <Select
+                      value={selectedUser.role}
+                      onValueChange={(value) => setSelectedUser({ ...selectedUser, role: value as UserRole })}
                     >
                       <SelectTrigger className="col-span-3">
                         <SelectValue placeholder="Select role" />
@@ -558,7 +558,7 @@ const AdminUsers = () => {
                     <Input
                       id="edit_company"
                       value={selectedUser.company || ''}
-                      onChange={(e) => setSelectedUser({...selectedUser, company: e.target.value})}
+                      onChange={(e) => setSelectedUser({ ...selectedUser, company: e.target.value })}
                       className="col-span-3"
                     />
                   </div>
@@ -569,7 +569,7 @@ const AdminUsers = () => {
                     <Input
                       id="edit_position"
                       value={selectedUser.position || ''}
-                      onChange={(e) => setSelectedUser({...selectedUser, position: e.target.value})}
+                      onChange={(e) => setSelectedUser({ ...selectedUser, position: e.target.value })}
                       className="col-span-3"
                     />
                   </div>
@@ -581,7 +581,7 @@ const AdminUsers = () => {
               </DialogFooter>
             </DialogContent>
           </Dialog>
-          
+
           {/* Delete User Dialog */}
           <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
             <DialogContent>

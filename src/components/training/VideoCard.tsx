@@ -15,29 +15,29 @@ interface VideoCardProps {
 export function VideoCard({ video }: VideoCardProps) {
   const navigate = useNavigate();
   const { toast } = useToast();
-  
+
   const handleWatchVideo = () => {
     navigate(`/training/video/${video.id}`);
   };
-  
+
   const handleTakeQuiz = () => {
     if (!isQuizUnlocked && !isQuizCompleted) {
       toast({
         title: "Quiz Locked",
-        description: "You need to watch at least 50% of the video to unlock the quiz.",
+        description: "You need to watch at least 80% of the video to unlock the quiz.",
         variant: "destructive",
       });
       return;
     }
     navigate(`/training/video/${video.id}?quiz=true`);
   };
-  
+
   const progress = video.progress?.watched_percentage || 0;
   const isCompleted = video.progress?.completed || false;
   const isQuizCompleted = video.progress?.quiz_completed || false;
   const hasQuiz = video.has_quiz;
   const isQuizUnlocked = progress >= 50;
-  
+
   return (
     <Card className="h-full flex flex-col">
       <CardHeader className="pb-2">
@@ -51,13 +51,13 @@ export function VideoCard({ video }: VideoCardProps) {
           {video.description || "No description available"}
         </CardDescription>
       </CardHeader>
-      
+
       <CardContent className="flex-grow">
-        <div 
-          className="relative rounded-md h-32 mb-4 bg-cover bg-center flex items-center justify-center" 
-          style={{ 
-            backgroundImage: video.thumbnail_url 
-              ? `url(${video.thumbnail_url})` 
+        <div
+          className="relative rounded-md h-32 mb-4 bg-cover bg-center flex items-center justify-center"
+          style={{
+            backgroundImage: video.thumbnail_url
+              ? `url(${video.thumbnail_url})`
               : undefined,
             backgroundColor: video.thumbnail_url ? undefined : 'hsl(var(--muted))'
           }}
@@ -68,9 +68,9 @@ export function VideoCard({ video }: VideoCardProps) {
               <span className="sr-only">Completed</span>
             </div>
           ) : (
-            <Button 
-              size="icon" 
-              className="rounded-full" 
+            <Button
+              size="icon"
+              className="rounded-full"
               variant="secondary"
               onClick={handleWatchVideo}
             >
@@ -79,7 +79,7 @@ export function VideoCard({ video }: VideoCardProps) {
             </Button>
           )}
         </div>
-        
+
         <div className="space-y-3">
           <div className="flex items-center justify-between text-sm">
             <span>Progress</span>
@@ -88,16 +88,16 @@ export function VideoCard({ video }: VideoCardProps) {
           <Progress value={progress} />
         </div>
       </CardContent>
-      
+
       <CardFooter className="border-t pt-4">
         <div className="w-full flex flex-col gap-2">
           <Button onClick={handleWatchVideo}>
             <PlayCircle className="h-4 w-4 mr-2" />
             {progress > 0 && !isCompleted ? "Continue" : "Watch Video"}
           </Button>
-          
+
           {hasQuiz && (
-            <Button 
+            <Button
               variant={isQuizCompleted ? "outline" : "secondary"}
               onClick={handleTakeQuiz}
               disabled={!isQuizUnlocked && !isQuizCompleted}
@@ -110,7 +110,7 @@ export function VideoCard({ video }: VideoCardProps) {
               ) : !isQuizUnlocked ? (
                 <>
                   <AlertCircle className="h-4 w-4 mr-2" />
-                  Watch 50% to Unlock Quiz
+                  Watch 80% to Unlock Quiz
                 </>
               ) : (
                 <>

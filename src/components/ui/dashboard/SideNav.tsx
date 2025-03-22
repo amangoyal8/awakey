@@ -62,23 +62,19 @@ export function SideNav({ role }: SideNavProps) {
   const [visibleItems, setVisibleItems] = useState<any[]>([]);
   const { isPageVisible, refreshRules } = usePageAccess();
   const defaultItems = navigationItems[role] || navigationItems.candidate;
-  
-  // Update visible items when role changes and check visibility
+
   useEffect(() => {
-    // Filter items based on page access rules
     const filteredItems = defaultItems.filter(item => {
-      // Dashboard and profile are always visible
       if (item.href === '/dashboard' || item.href === '/profile') {
         return true;
       }
-      
+
       return isPageVisible(item.href, role);
     });
-    
+
     setVisibleItems(filteredItems);
   }, [role, defaultItems, isPageVisible]);
-  
-  // Refresh rules when component mounts
+
   useEffect(() => {
     refreshRules();
   }, [refreshRules]);

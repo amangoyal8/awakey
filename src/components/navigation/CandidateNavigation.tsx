@@ -9,17 +9,17 @@ interface CandidateNavigationProps {
   onClose?: () => void;
 }
 
-export function CandidateNavigation({ variant, onClose = () => {} }: CandidateNavigationProps) {
+export function CandidateNavigation({ variant, onClose = () => { } }: CandidateNavigationProps) {
   const isMobile = variant === 'mobile';
   const { isPageVisible, refreshRules } = usePageAccess();
-  
+
   // Refresh rules when component mounts
   useEffect(() => {
     console.log("CandidateNavigation - Refreshing page access rules");
     refreshRules();
   }, [refreshRules]);
-  
-  const linkClass = isMobile 
+
+  const linkClass = isMobile
     ? "block py-2 text-sm font-medium transition-colors hover:text-primary"
     : "text-sm font-medium transition-colors hover:text-primary";
 
@@ -78,9 +78,9 @@ export function CandidateNavigation({ variant, onClose = () => {} }: CandidateNa
   return (
     <div className={isMobile ? "space-y-4" : "flex items-center gap-6"}>
       {visibleItems.map((item) => (
-        <Link 
+        <Link
           key={item.path}
-          to={item.path} 
+          to={item.path}
           className={linkClass}
           onClick={handleClick}
         >

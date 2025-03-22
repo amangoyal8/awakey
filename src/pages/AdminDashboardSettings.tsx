@@ -3,12 +3,12 @@ import { useState, useEffect } from "react";
 import { Header } from "@/components/ui/Header";
 import { SideNav } from "@/components/ui/dashboard/SideNav";
 import { Button } from "@/components/ui/button";
-import { 
-  Card, 
-  CardContent, 
-  CardDescription, 
-  CardHeader, 
-  CardTitle 
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle
 } from "@/components/ui/card";
 import {
   Table,
@@ -28,14 +28,14 @@ import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
 
 const AdminDashboardSettings = () => {
-  const { 
+  const {
     widgetSettings,
     isLoading,
     refreshSettings,
     updateWidgetSetting,
     createDefaultSettingsIfNeeded
   } = useDashboardSettings();
-  
+
   const [activeTab, setActiveTab] = useState<string>("all");
   const [filteredWidgets, setFilteredWidgets] = useState(widgetSettings);
 
@@ -73,13 +73,13 @@ const AdminDashboardSettings = () => {
       const newRoles = hasRole
         ? widget.allowed_roles.filter((r: string) => r !== role)
         : [...widget.allowed_roles, role];
-      
+
       // Ensure at least one role has access
       if (newRoles.length === 0) {
         toast.error("At least one role must have access to this widget");
         return;
       }
-      
+
       await updateWidgetSetting(widget.id, { allowed_roles: newRoles });
     } catch (error) {
       console.error("Error toggling role access:", error);
@@ -118,7 +118,7 @@ const AdminDashboardSettings = () => {
                   </CardDescription>
                 </div>
                 <div className="flex space-x-2">
-                  <Button 
+                  <Button
                     onClick={handleInitialize}
                     variant="outline"
                     size="sm"
@@ -126,7 +126,7 @@ const AdminDashboardSettings = () => {
                     <Settings2 className="mr-2 h-4 w-4" />
                     Initialize Default Widgets
                   </Button>
-                  <Button 
+                  <Button
                     onClick={() => refreshSettings()}
                     variant="outline"
                     size="sm"
@@ -164,7 +164,7 @@ const AdminDashboardSettings = () => {
                       <TabsTrigger value="info">Information</TabsTrigger>
                     </TabsList>
                   </Tabs>
-                
+
                   <div className="rounded-md border">
                     <Table>
                       <TableHeader>

@@ -2,12 +2,12 @@ import { useState, useEffect } from "react";
 import { Header } from "@/components/ui/Header";
 import { SideNav } from "@/components/ui/dashboard/SideNav";
 import { Button } from "@/components/ui/button";
-import { 
-  Card, 
-  CardContent, 
-  CardDescription, 
-  CardHeader, 
-  CardTitle 
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle
 } from "@/components/ui/card";
 import {
   Table,
@@ -29,25 +29,25 @@ import { toast } from "sonner";
 const SelectAllControl = ({ role, filteredRules }: { role: UserRole, filteredRules: PageAccessRule[] }) => {
   const { bulkUpdateRolesAccess } = usePageAccess();
   const [isAllSelected, setIsAllSelected] = useState(false);
-  
+
   useEffect(() => {
     if (filteredRules.length > 0) {
-      const allSelected = filteredRules.every(rule => 
+      const allSelected = filteredRules.every(rule =>
         rule.allowed_roles.includes(role as UserRole)
       );
       setIsAllSelected(allSelected);
     }
   }, [filteredRules, role]);
-  
+
   const handleSelectAll = async () => {
     await bulkUpdateRolesAccess(role as UserRole, !isAllSelected);
   };
-  
+
   return (
     <div className="flex items-center mb-4 justify-end">
-      <Button 
-        variant="outline" 
-        size="sm" 
+      <Button
+        variant="outline"
+        size="sm"
         onClick={handleSelectAll}
         className="text-xs"
       >
@@ -76,7 +76,7 @@ const RoleToggle = ({ rule, role }: { rule: PageAccessRule, role: UserRole }) =>
       const newAllowedRoles = isEnabled
         ? rule.allowed_roles.filter(r => r !== role)
         : [...rule.allowed_roles, role];
-      
+
       await updateRule(rule.id, { allowed_roles: newAllowedRoles });
     } catch (error) {
       console.error("Error updating role access:", error);
@@ -93,14 +93,14 @@ const RoleToggle = ({ rule, role }: { rule: PageAccessRule, role: UserRole }) =>
 };
 
 const AdminPageAccess = () => {
-  const { 
-    accessRules, 
-    isLoading, 
-    refreshRules, 
-    updateRule, 
-    createDefaultRulesIfNeeded 
+  const {
+    accessRules,
+    isLoading,
+    refreshRules,
+    updateRule,
+    createDefaultRulesIfNeeded
   } = usePageAccess();
-  
+
   const [activeTab, setActiveTab] = useState<string>("all");
   const [filteredRules, setFilteredRules] = useState<PageAccessRule[]>([]);
   const [visibleRoles, setVisibleRoles] = useState<UserRole[]>(['admin', 'manager', 'salesperson', 'candidate']);
@@ -112,9 +112,9 @@ const AdminPageAccess = () => {
     } else {
       const roleFilter = activeTab as UserRole;
       setFilteredRules(
-        accessRules.filter(rule => 
-          CONFIGURABLE_PAGES.find(page => 
-            page.path === rule.page_path && 
+        accessRules.filter(rule =>
+          CONFIGURABLE_PAGES.find(page =>
+            page.path === rule.page_path &&
             page.defaultRoles.includes(roleFilter)
           )
         )
@@ -164,7 +164,7 @@ const AdminPageAccess = () => {
                   </CardDescription>
                 </div>
                 <div className="flex space-x-2">
-                  <Button 
+                  <Button
                     onClick={handleInitialize}
                     variant="outline"
                     size="sm"
@@ -172,7 +172,7 @@ const AdminPageAccess = () => {
                     <Settings2 className="mr-2 h-4 w-4" />
                     Initialize Default Rules
                   </Button>
-                  <Button 
+                  <Button
                     onClick={() => refreshRules()}
                     variant="outline"
                     size="sm"
@@ -211,14 +211,14 @@ const AdminPageAccess = () => {
                       <TabsTrigger value="candidate">Candidate</TabsTrigger>
                     </TabsList>
                   </Tabs>
-                
+
                   {activeTab !== "all" && (
-                    <SelectAllControl 
-                      role={activeTab as UserRole} 
-                      filteredRules={filteredRules} 
+                    <SelectAllControl
+                      role={activeTab as UserRole}
+                      filteredRules={filteredRules}
                     />
                   )}
-                
+
                   <div className="rounded-md border">
                     <Table>
                       <TableHeader>

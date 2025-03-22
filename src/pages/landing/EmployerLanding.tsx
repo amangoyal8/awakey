@@ -10,7 +10,7 @@ const EmployerLanding = () => {
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
-      
+
       {/* Hero Section */}
       <section className="relative py-20 md:py-28 bg-gradient-to-b from-background to-muted/50 overflow-hidden">
         <div className="absolute inset-0 bg-grid-pattern opacity-10"></div>
@@ -40,9 +40,9 @@ const EmployerLanding = () => {
             </div>
             <div className="hidden md:block relative">
               <div className="aspect-square w-full max-w-md mx-auto rounded-2xl overflow-hidden shadow-2xl">
-                <img 
-                  src="https://images.unsplash.com/photo-1556761175-b413da4baf72?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1074&q=80" 
-                  alt="High-performing sales team" 
+                <img
+                  src="https://images.unsplash.com/photo-1556761175-b413da4baf72?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1074&q=80"
+                  alt="High-performing sales team"
                   className="w-full h-full object-cover"
                 />
               </div>
@@ -50,7 +50,7 @@ const EmployerLanding = () => {
           </div>
         </div>
       </section>
-      
+
       {/* Three Pillars Section */}
       <section className="py-20 bg-background">
         <div className="container mx-auto px-4">
@@ -60,7 +60,7 @@ const EmployerLanding = () => {
               We address the entire sales talent lifecycle, from hiring to long-term retention
             </p>
           </div>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-3 gap-x-8 gap-y-12 max-w-6xl mx-auto">
             {/* Pillar 1: Hiring & Onboarding */}
             <div className="space-y-4">
@@ -90,7 +90,7 @@ const EmployerLanding = () => {
                 </li>
               </ul>
             </div>
-            
+
             {/* Pillar 2: Performance */}
             <div className="space-y-4">
               <div className="h-1 w-16 bg-primary"></div>
@@ -119,7 +119,7 @@ const EmployerLanding = () => {
                 </li>
               </ul>
             </div>
-            
+
             {/* Pillar 3: Retention */}
             <div className="space-y-4">
               <div className="h-1 w-16 bg-primary"></div>
@@ -151,7 +151,7 @@ const EmployerLanding = () => {
           </div>
         </div>
       </section>
-      
+
       {/* Stats Section */}
       <section className="py-20 bg-muted/30">
         <div className="container mx-auto px-4">
@@ -161,18 +161,18 @@ const EmployerLanding = () => {
               Our platform delivers measurable improvements for organizations
             </p>
           </div>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
             <div className="text-center p-8 bg-background rounded-xl shadow-sm">
               <div className="text-4xl font-light text-primary mb-2">+27%</div>
               <p className="text-lg">Average increase in sales performance</p>
             </div>
-            
+
             <div className="text-center p-8 bg-background rounded-xl shadow-sm">
               <div className="text-4xl font-light text-primary mb-2">-35%</div>
               <p className="text-lg">Reduction in sales team turnover</p>
             </div>
-            
+
             <div className="text-center p-8 bg-background rounded-xl shadow-sm">
               <div className="text-4xl font-light text-primary mb-2">40%</div>
               <p className="text-lg">Faster time to full productivity</p>
@@ -180,7 +180,7 @@ const EmployerLanding = () => {
           </div>
         </div>
       </section>
-      
+
       {/* CTA Section */}
       <section className="py-20 bg-primary">
         <div className="container mx-auto px-4">

@@ -60,7 +60,7 @@ export default {
 					DEFAULT: 'hsl(var(--sidebar-background))',
 					foreground: 'hsl(var(--sidebar-foreground))',
 					primary: 'hsl(var(--sidebar-primary))',
-					'primary-foreground': 'hsl(var(--sidebar-primary-foreground))',
+					'primary-foreground': 'hsl(var(--bar-primary-foreground))',
 					accent: 'hsl(var(--sidebar-accent))',
 					'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
 					border: 'hsl(var(--sidebar-border))',
@@ -86,23 +86,23 @@ export default {
 					to: { opacity: '1' }
 				},
 				'fade-up': {
-					from: { 
-						opacity: '0', 
-						transform: 'translateY(10px)' 
+					from: {
+						opacity: '0',
+						transform: 'translateY(10px)'
 					},
-					to: { 
-						opacity: '1', 
-						transform: 'translateY(0)' 
+					to: {
+						opacity: '1',
+						transform: 'translateY(0)'
 					}
 				},
 				'scale-in': {
-					from: { 
-						opacity: '0', 
-						transform: 'scale(0.95)' 
+					from: {
+						opacity: '0',
+						transform: 'scale(0.95)'
 					},
-					to: { 
-						opacity: '1', 
-						transform: 'scale(1)' 
+					to: {
+						opacity: '1',
+						transform: 'scale(1)'
 					}
 				}
 			},

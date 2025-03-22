@@ -16,16 +16,22 @@ export const useTrainingVideoState = (videoId: string, shouldShowQuiz: boolean) 
   const [quizUnlocked, setQuizUnlocked] = useState(false);
   const [videoWatched, setVideoWatched] = useState(false);
   const [watchedPercentage, setWatchedPercentage] = useState(0);
+  const [quizAutoShown, setQuizAutoShown] = useState(false);
+  const [quizUnlockNotified, setQuizUnlockNotified] = useState(false);
+
+
   const { toast } = useToast();
   const navigate = useNavigate();
 
   const fetchData = async () => {
     if (!videoId) return;
-    
+
     try {
+
+
       setIsLoading(true);
       console.log("Fetching data for video:", videoId);
-      
+
       // Get user session
       const { data: sessionData } = await supabase.auth.getSession();
       if (!sessionData.session) {
@@ -36,28 +42,28 @@ export const useTrainingVideoState = (videoId: string, shouldShowQuiz: boolean) 
         navigate("/login");
         return;
       }
-      
+
       // Get user profile
       const { data: profileData } = await supabase
         .from('profiles')
         .select('role')
         .eq('id', sessionData.session.user.id)
         .single();
-        
+
       if (profileData) {
         setRole(profileData.role);
       }
-      
+
       // Fetch video data
       const { data: video, error: videoError } = await supabase
         .from('training_videos')
         .select('*')
         .eq('id', videoId)
         .single();
-        
+
       if (videoError) throw videoError;
       console.log("Video data:", video);
-      
+
       // Fetch user progress
       const { data: progress, error: progressError } = await supabase
         .from('training_progress')
@@ -65,14 +71,14 @@ export const useTrainingVideoState = (videoId: string, shouldShowQuiz: boolean) 
         .eq('user_id', sessionData.session.user.id)
         .eq('video_id', videoId)
         .single();
-        
+
       if (!progressError && progress) {
         console.log("Existing progress found:", progress);
         setUserProgress(progress);
         setWatchedPercentage(progress.watched_percentage || 0);
-        
+
         // Check if quiz should be unlocked (50% threshold)
-        if (progress.watched_percentage >= 50) {
+        if (progress.watched_percentage >= 80) {
           console.log("Quiz unlocked based on existing progress");
           setQuizUnlocked(true);
         }
@@ -92,13 +98,13 @@ export const useTrainingVideoState = (videoId: string, shouldShowQuiz: boolean) 
           })
           .select()
           .single();
-          
+
         if (createError) throw createError;
         console.log("New progress created:", newProgress);
         setUserProgress(newProgress);
         setWatchedPercentage(0);
       }
-      
+
       // Fetch quiz questions
       const { data: quiz, error: quizError } = await supabase
         .from('training_quiz_questions')
@@ -113,17 +119,17 @@ export const useTrainingVideoState = (videoId: string, shouldShowQuiz: boolean) 
         `)
         .eq('video_id', videoId)
         .order('created_at', { ascending: true });
-        
+
       if (quizError) throw quizError;
-      
+
       console.log("Quiz data:", quiz);
       setVideoData(video);
       setQuizData(quiz || []);
-      
+
       // Show quiz if the URL has the quiz parameter
       if (shouldShowQuiz) {
         // Check if quiz is unlocked
-        if ((progress && progress.watched_percentage >= 50) || progress?.quiz_completed) {
+        if ((progress && progress.watched_percentage >= 80)) {
           console.log("Setting showQuiz to true based on URL param and progress");
           setShowQuiz(true);
           setQuizUnlocked(true);
@@ -131,20 +137,22 @@ export const useTrainingVideoState = (videoId: string, shouldShowQuiz: boolean) 
           // Redirect back if trying to access quiz directly when not unlocked
           toast({
             title: "Quiz Locked",
-            description: "You need to watch at least 50% of the video to unlock the quiz.",
+            description: "You need to watch at least 80% of the video to unlock the quiz.",
             variant: "destructive",
           });
           navigate(`/training/video/${videoId}`);
         }
-      } else if ((progress && progress.watched_percentage >= 50 && 
-          !progress.quiz_completed && quiz && quiz.length > 0) || 
-          (progress?.quiz_completed)) {
+      } else if ((progress && progress.watched_percentage >= 80 &&
+        !progress.quiz_completed && quiz && quiz.length > 0) ||
+        (progress?.quiz_completed)) {
         console.log("Setting quizUnlocked to true based on progress");
         setQuizUnlocked(true);
         if (new URLSearchParams(window.location.search).get('autoShowQuiz') === 'true') {
           setShowQuiz(true);
         }
       }
+
+
     } catch (error) {
       console.error('Error fetching training video:', error);
       toast({
@@ -158,10 +166,10 @@ export const useTrainingVideoState = (videoId: string, shouldShowQuiz: boolean) 
 
   const saveProgress = async () => {
     if (!userProgress || !videoData) return;
-    
+
     try {
       console.log(`Saving final progress: ${watchedPercentage}%`);
-      
+
       const { data, error } = await supabase
         .from('training_progress')
         .update({
@@ -172,7 +180,7 @@ export const useTrainingVideoState = (videoId: string, shouldShowQuiz: boolean) 
         .eq('id', userProgress.id)
         .select()
         .single();
-        
+
       if (error) {
         console.error('Error saving final progress:', error);
       } else if (data) {
@@ -182,26 +190,27 @@ export const useTrainingVideoState = (videoId: string, shouldShowQuiz: boolean) 
       console.error('Error in cleanup function:', err);
     }
   };
+  const [lastSavedPercentage, setLastSavedPercentage] = useState(0);
 
   const handleTimeUpdate = async (currentTime: number, duration: number) => {
     if (!userProgress || !videoData || !duration) return;
-    
+
     const percentage = Math.floor((currentTime / duration) * 100);
-    
     setWatchedPercentage(percentage);
-    
-    // Force a UI update to ensure progress bar moves
     setProgressUpdateCount(prev => prev + 1);
-    
-    // Update progress every 3 seconds or when percentage changes significantly
+
     const now = Date.now();
+
+    // Only update if the percentage changed significantly or 3 seconds have passed
     if (
-      Math.abs(percentage - (userProgress.watched_percentage || 0)) >= 5 || 
+      Math.abs(percentage - lastSavedPercentage) >= 5 ||
       now - lastProgressUpdate > 3000
     ) {
-      console.log(`Updating progress: ${percentage}%, Time: ${currentTime}/${duration}`);
       setLastProgressUpdate(now);
-      
+      setLastSavedPercentage(percentage); // ✅ Update local tracker
+
+      console.log(`Updating progress: ${percentage}%, Time: ${currentTime}/${duration}`);
+
       try {
         const { data, error } = await supabase
           .from('training_progress')
@@ -213,49 +222,23 @@ export const useTrainingVideoState = (videoId: string, shouldShowQuiz: boolean) 
           .eq('id', userProgress.id)
           .select()
           .single();
-          
+
         if (!error && data) {
           setUserProgress(data);
-          
-          // Check if quiz should be unlocked (at 50% progress)
-          if (percentage >= 50 && !quizUnlocked) {
-            console.log("Unlocking quiz at 50% progress");
-            setQuizUnlocked(true);
-            
-            // Show a toast notification
-            toast({
-              title: "Quiz Available",
-              description: "You can now take the quiz for this training video!",
-            });
-          }
-          
-          // Mark video as watched if progress is 95% or more
-          if (percentage >= 95 && !videoWatched) {
-            setVideoWatched(true);
-          }
+          // ... rest of your logic
         } else if (error) {
           console.error('Error updating progress:', error);
         }
-        
-        // Show quiz automatically when video is complete
-        if (percentage >= 95 && !userProgress.quiz_completed && quizData.length > 0) {
-          // Show a toast notification
-          toast({
-            title: "Video Completed",
-            description: "Let's take the quiz now to complete your training!",
-          });
-          
-          // Set a short timeout to let the user register the completion first
-          setTimeout(() => {
-            setShowQuiz(true);
-          }, 1000);
-        }
+
+        // Quiz show logic...
+
       } catch (err) {
         console.error('Error updating progress:', err);
       }
     }
   };
-  
+
+
   const handleVideoEnded = () => {
     // Mark as completed if there's no quiz
     if (quizData.length === 0) {
@@ -264,10 +247,10 @@ export const useTrainingVideoState = (videoId: string, shouldShowQuiz: boolean) 
       setShowQuiz(true);
     }
   };
-  
+
   const markAsCompleted = async () => {
     if (!userProgress) return;
-    
+
     try {
       const { data, error } = await supabase
         .from('training_progress')
@@ -279,12 +262,12 @@ export const useTrainingVideoState = (videoId: string, shouldShowQuiz: boolean) 
         .eq('id', userProgress.id)
         .select()
         .single();
-        
+
       if (error) throw error;
-      
+
       setUserProgress(data);
       setWatchedPercentage(100);
-      
+
       toast({
         description: "Congratulations! You've completed this training module.",
       });
@@ -292,29 +275,29 @@ export const useTrainingVideoState = (videoId: string, shouldShowQuiz: boolean) 
       console.error('Error marking as completed:', error);
     }
   };
-  
+
   const handleTakeQuiz = () => {
     console.log("Take Quiz clicked. quizUnlocked:", quizUnlocked, "watchedPercentage:", watchedPercentage);
     if (!quizUnlocked) {
       toast({
         title: "Quiz Locked",
-        description: "You need to watch at least 50% of the video to unlock the quiz.",
+        description: "You need to watch at least 80% of the video to unlock the quiz.",
         variant: "destructive",
       });
       return;
     }
-    
+
     setShowQuiz(true);
   };
-  
+
   const handleQuitTraining = () => {
     saveProgress();
     navigate('/training');
   };
-  
+
   const handleQuizComplete = async (score: number, passed: boolean) => {
     if (!userProgress) return;
-    
+
     try {
       const { data, error } = await supabase
         .from('training_progress')
@@ -327,9 +310,9 @@ export const useTrainingVideoState = (videoId: string, shouldShowQuiz: boolean) 
         .eq('id', userProgress.id)
         .select()
         .single();
-        
+
       if (error) throw error;
-      
+
       // Also save to training_quiz_results for reporting
       if (videoId) {
         const { data: sessionData } = await supabase.auth.getSession();
@@ -344,17 +327,17 @@ export const useTrainingVideoState = (videoId: string, shouldShowQuiz: boolean) 
             });
         }
       }
-      
+
       setUserProgress(data);
       setShowQuiz(false);
-      
+
       toast({
-        description: passed 
-          ? "Congratulations! You've successfully completed this training module." 
+        description: passed
+          ? "Congratulations! You've successfully completed this training module."
           : "You didn't pass the quiz. You can review the content and try again.",
         variant: passed ? "default" : "destructive",
       });
-      
+
       if (passed) {
         setTimeout(() => {
           navigate('/training');
@@ -371,7 +354,7 @@ export const useTrainingVideoState = (videoId: string, shouldShowQuiz: boolean) 
 
   useEffect(() => {
     fetchData();
-    
+
     // Cleanup function
     return () => {
       saveProgress();

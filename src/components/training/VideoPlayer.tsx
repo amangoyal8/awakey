@@ -1,4 +1,3 @@
-
 import { useState, useRef, useEffect } from "react";
 import { PlayCircle, PauseCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -22,35 +21,67 @@ export function VideoPlayer({
 }: VideoPlayerProps) {
   const [isPlaying, setIsPlaying] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
+  const lastAllowedTimeRef = useRef<number>(lastPosition); // To prevent skipping
 
   useEffect(() => {
-    // Set initial position if available
-    if (videoRef.current && lastPosition) {
-      videoRef.current.currentTime = lastPosition;
+    const video = videoRef.current;
+
+    if (video) {
+      if (lastPosition) video.currentTime = lastPosition;
+
+      // Prevent playback speed change
+      const handleRateChange = () => {
+        if (video.playbackRate !== 1) {
+          video.playbackRate = 1;
+        }
+      };
+      video.addEventListener("ratechange", handleRateChange);
+
+      return () => {
+        video.removeEventListener("ratechange", handleRateChange);
+      };
     }
   }, [lastPosition]);
 
   const handleTimeUpdate = () => {
-    if (videoRef.current) {
-      const currentTime = videoRef.current.currentTime;
-      const duration = videoRef.current.duration;
-      if (duration) {
-        onTimeUpdate(currentTime, duration);
-      }
+    const video = videoRef.current;
+    if (!video) return;
+
+    const currentTime = video.currentTime;
+    const duration = video.duration;
+
+    if (currentTime > lastAllowedTimeRef.current + 1) {
+      video.currentTime = lastAllowedTimeRef.current;
+      return;
+    }
+
+    if (!video.paused && currentTime > lastAllowedTimeRef.current) {
+      lastAllowedTimeRef.current = currentTime;
+      onTimeUpdate(currentTime, duration);
+    }
+  };
+
+  const handleSeeking = () => {
+    const video = videoRef.current;
+    if (!video) return;
+
+    if (video.currentTime > lastAllowedTimeRef.current + 1) {
+      video.currentTime = lastAllowedTimeRef.current;
     }
   };
 
   const handlePlayPause = () => {
-    if (videoRef.current) {
-      if (isPlaying) {
-        videoRef.current.pause();
-        setIsPlaying(false);
-        onPause?.();
-      } else {
-        videoRef.current.play();
-        setIsPlaying(true);
-        onPlay?.();
-      }
+    const video = videoRef.current;
+    if (!video) return;
+
+    if (isPlaying) {
+      video.pause();
+      setIsPlaying(false);
+      onPause?.();
+    } else {
+      video.play();
+      setIsPlaying(true);
+      onPlay?.();
     }
   };
 
@@ -63,6 +94,8 @@ export function VideoPlayer({
           className="w-full max-h-[450px]"
           controls
           onTimeUpdate={handleTimeUpdate}
+          onSeeking={handleSeeking}
+          onSeeked={handleSeeking}
           onPlay={() => {
             setIsPlaying(true);
             onPlay?.();
@@ -72,13 +105,14 @@ export function VideoPlayer({
             onPause?.();
           }}
           onEnded={onVideoEnded}
-          autoPlay={false}
         />
       ) : (
         <div className="w-full h-80 flex items-center justify-center bg-muted">
           <p>Video not available</p>
         </div>
       )}
+
+      {/* Custom Play/Pause Button */}
       <Button
         variant="outline"
         size="icon"
