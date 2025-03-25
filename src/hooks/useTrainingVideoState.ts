@@ -84,7 +84,6 @@ export const useTrainingVideoState = (videoId: string, shouldShowQuiz: boolean) 
         }
       } else {
         console.log("No existing progress, creating new entry");
-        // Create progress entry if it doesn't exist
         const { data: newProgress, error: createError } = await supabase
           .from('training_progress')
           .insert({
@@ -126,15 +125,12 @@ export const useTrainingVideoState = (videoId: string, shouldShowQuiz: boolean) 
       setVideoData(video);
       setQuizData(quiz || []);
 
-      // Show quiz if the URL has the quiz parameter
       if (shouldShowQuiz) {
-        // Check if quiz is unlocked
         if ((progress && progress.watched_percentage >= 80)) {
           console.log("Setting showQuiz to true based on URL param and progress");
           setShowQuiz(true);
           setQuizUnlocked(true);
         } else {
-          // Redirect back if trying to access quiz directly when not unlocked
           toast({
             title: "Quiz Locked",
             description: "You need to watch at least 80% of the video to unlock the quiz.",
@@ -201,13 +197,12 @@ export const useTrainingVideoState = (videoId: string, shouldShowQuiz: boolean) 
 
     const now = Date.now();
 
-    // Only update if the percentage changed significantly or 3 seconds have passed
     if (
       Math.abs(percentage - lastSavedPercentage) >= 5 ||
       now - lastProgressUpdate > 3000
     ) {
       setLastProgressUpdate(now);
-      setLastSavedPercentage(percentage); // ✅ Update local tracker
+      setLastSavedPercentage(percentage);
 
       console.log(`Updating progress: ${percentage}%, Time: ${currentTime}/${duration}`);
 
@@ -225,12 +220,10 @@ export const useTrainingVideoState = (videoId: string, shouldShowQuiz: boolean) 
 
         if (!error && data) {
           setUserProgress(data);
-          // ... rest of your logic
         } else if (error) {
           console.error('Error updating progress:', error);
         }
 
-        // Quiz show logic...
 
       } catch (err) {
         console.error('Error updating progress:', err);
@@ -240,7 +233,6 @@ export const useTrainingVideoState = (videoId: string, shouldShowQuiz: boolean) 
 
 
   const handleVideoEnded = () => {
-    // Mark as completed if there's no quiz
     if (quizData.length === 0) {
       markAsCompleted();
     } else if (!userProgress.quiz_completed) {
@@ -355,7 +347,6 @@ export const useTrainingVideoState = (videoId: string, shouldShowQuiz: boolean) 
   useEffect(() => {
     fetchData();
 
-    // Cleanup function
     return () => {
       saveProgress();
     };
@@ -377,6 +368,6 @@ export const useTrainingVideoState = (videoId: string, shouldShowQuiz: boolean) 
     handleTakeQuiz,
     handleQuitTraining,
     handleQuizComplete,
-    saveProgress
+    saveProgress,
   };
 };
